@@ -325,23 +325,31 @@
 
 ;; res0: List[Symbol] = List('a, 'b, 'd, 'e, 'g, 'h, 'j, 'k)
 
-(defn drop [N lst]
-  (mapcat (fn [x]
-            (if (< (count x) 2)
-              )
-  (partition-all N lst))
+;Bravo pattern
+(defn drop-every [N lst]
+  (mapcat
+   (fn [x]
+     (if (= (count x) N)
+       (butlast x)
+       x))
+  (partition-all N lst)))
 
-(drop 3 (char-array "abcdefghijk"))
+(drop-every 3 (char-array "abcdefghijk"))
 
+(def x '(\a \b))
+
+(list (first x) (second x))
 
 ;filter is by content not by index.
 
-(partition-all 3 (char-array "abccdefghijkl"))
+(def ta1 (partition-all 3 (char-array "abccdefghijkl")))
 
+(mapcat identity ta1)
 
 (nth (char-array "abcdefghijk") 3)
 
-
+;concatetation
+(concat [1 2] [3 4])
 
 ;java interpo
 (def v ["one" "two" "three" "two"])
@@ -374,8 +382,20 @@
 
 ;; scala> split(3, List('a, 'b, 'c, 'd, 'e, 'f, 'g, 'h, 'i, 'j, 'k))
 ;; res0: (List[Symbol], List[Symbol]) = (List('a, 'b, 'c),List('d, 'e, 'f, 'g, 'h, 'i, 'j, 'k))
+(defn split [n lst]
+  (list
+    (take n lst)
+    (drop n lst)))
 
+(split 3 (char-array "abcdefghijk"))
 
+(take 3 (char-array "abcdefghijk"))
+
+(drop 3 (char-array "abcdefghijk"))
+
+(range 1 3)
+
+(concat [4 5])
 
 ;; P18 (**) Extract a slice from a list.
 ;; Given two indices, I and K, the slice is the list containing the elements from and including the Ith element
@@ -385,17 +405,33 @@
 ;; scala> slice(3, 7, List('a, 'b, 'c, 'd, 'e, 'f, 'g, 'h, 'i, 'j, 'k))
 ;; res0: List[Symbol] = List('d, 'e, 'f, 'g)
 
+;exclusive 'to' element
+(defn slice [from to lst]
+  (take (- to from)
+    (drop from lst)))
 
+(slice 3 7 (char-array "abcdefghijk"))
 
 ;; P19 (**) Rotate a list N places to the left.
 ;; Examples:
-;; scala> rotate(3, List('a, 'b, 'c, 'd, 'e, 'f, 'g, 'h, 'i, 'j, 'k))
+;; scala> rotate(3,     List('a, 'b, 'c, 'd, 'e, 'f, 'g, 'h, 'i, 'j, 'k))
 ;; res0: List[Symbol] = List('d, 'e, 'f, 'g, 'h, 'i, 'j, 'k, 'a, 'b, 'c)
 
-;; scala> rotate(-2, List('a, 'b, 'c, 'd, 'e, 'f, 'g, 'h, 'i, 'j, 'k))
+(defn rotate [n lst]
+  (if (> n 0)
+    (concat (drop n lst) (take n lst))
+    (let [ri (+ (count lst) n)]
+      (concat (drop ri lst) (take ri lst)))))
+
+(rotate 3 (char-array "abcdefghijk"))
+
+;; scala> rotate(-2,    List('a, 'b, 'c, 'd, 'e, 'f, 'g, 'h, 'i, 'j, 'k))
 ;; res1: List[Symbol] = List('j, 'k, 'a, 'b, 'c, 'd, 'e, 'f, 'g, 'h, 'i)
 
+(rotate -2 (char-array "abcdefghijk"))
 
+;stay same
+(drop -3 (char-array "abcdefghijk"))
 
 ;; P20 (*) Remove the Kth element from a list.
 ;; Return the list and the removed element in a Tuple. Elements are numbered from 0.
@@ -404,5 +440,18 @@
 ;; scala> removeAt(1, List('a, 'b, 'c, 'd))
 ;; res0: (List[Symbol], Symbol) = (List('a, 'c, 'd),'b)
 
+(defn removeAt [i lst]
+  (let [that (nth lst i)]
+    (list
+      (filter (fn [x]
+               (if-not (= x that)
+                 true
+                 false)) lst)
+     that)))
 
+(def t1 (char-array "abcd"))
+
+(nth t1 1)
+
+(removeAt 1 t1)
 
