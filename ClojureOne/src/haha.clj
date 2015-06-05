@@ -184,6 +184,8 @@
 
 ;; scala> decode(List((4, 'a), (1, 'b), (2, 'c), (2, 'a), (1, 'd), (4, 'e)))
 ;; res0: List[Symbol] = List('a, 'a, 'a, 'a, 'b, 'c, 'c, 'a, 'a, 'd, 'e, 'e, 'e, 'e)
+
+;https://github.com/pebrc/ninety-nine-clojure/blob/64d77d60f578e288ae676f5ac7d8657fa22fa519/src/ninety_nine_clojure/lists.clj#L119
 (defn decode [lst]
   (map (fn [t] (#(repeat (first t) (second t)))) lst))
 
@@ -279,32 +281,90 @@
 
 ;; P13 (**) Run-length encoding of a list (direct solution).
 ;; Implement the so-called run-length encoding data compression method directly.
+
 ;; I.e. don't use other methods you've written (like P09's pack); do all the work directly.
 ;; Example:
 
 ;; scala> encodeDirect(List('a, 'a, 'a, 'a, 'b, 'c, 'c, 'a, 'a, 'd, 'e, 'e, 'e, 'e))
 ;; res0: List[(Int, Symbol)] = List((4,'a), (1,'b), (2,'c), (2,'a), (1,'d), (4,'e))
+(defn encodeDirect [lst]
+  (let [x (first lst)
+        xs (rest lst)]
+    (take-while #())))
 
+(defn encodeDirect [lst]
+  (map #(list (count %) (first %))
+    (partition-by identity lst)))
+
+(encodeDirect (char-array "aaaabccaadeeee"))
 
 ;; P14 (*) Duplicate the elements of a list.
 ;; Example:
 ;; scala> duplicate(List('a, 'b, 'c, 'c, 'd))
 ;; res0: List[Symbol] = List('a, 'a, 'b, 'b, 'c, 'c, 'c, 'c, 'd, 'd)
 (defn duplicate [lst]
-  ())
+  (flatten
+    (map #(repeat 2 %) lst)))
 
+(duplicate (char-array "abccd"))
 
 ;; P15 (**) Duplicate the elements of a list a given number of times.
 ;; Example:
 ;; scala> duplicateN(3, List('a, 'b, 'c, 'c, 'd))
 ;; res0: List[Symbol] = List('a, 'a, 'a, 'b, 'b, 'b, 'c, 'c, 'c, 'c, 'c, 'c, 'd, 'd, 'd)
+(defn duplicateN [n lst]
+  (flatten
+   (map #(repeat n %) lst)))
 
-
+(duplicateN 3 (char-array "abccd"))
 
 ;; P16 (**) Drop every Nth element from a list.
 ;; Example:
+
 ;; scala> drop(3, List('a, 'b, 'c, 'd, 'e, 'f, 'g, 'h, 'i, 'j, 'k))
+
 ;; res0: List[Symbol] = List('a, 'b, 'd, 'e, 'g, 'h, 'j, 'k)
+
+(defn drop [N lst]
+  (mapcat (fn [x]
+            (if (< (count x) 2)
+              )
+  (partition-all N lst))
+
+(drop 3 (char-array "abcdefghijk"))
+
+
+;filter is by content not by index.
+
+(partition-all 3 (char-array "abccdefghijkl"))
+
+
+(nth (char-array "abcdefghijk") 3)
+
+
+
+;java interpo
+(def v ["one" "two" "three" "two"])
+(.indexOf v "two")
+(.indexOf v "foo")
+
+
+;find index from vector
+(defn indices-of [f coll]
+  (keep-indexed #(if (f %2) %1 nil) coll))
+
+(defn first-index-of [f coll]
+  (first (indices-of f coll)))
+
+(defn find-thing [value coll]
+  (first-index-of #(= % value) coll))
+
+(find-thing "two" ["one" "two" "three" "two"]) ; 1
+(find-thing "two" '("one" "two" "three")) ; 1
+
+;; these answers are a bit silly
+(find-thing "two" #{"one" "two" "three"}) ; 1
+(find-thing "two" {"one" "two" "two" "three"}) ; nil
 
 
 
