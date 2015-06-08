@@ -123,10 +123,71 @@
 ;test
 (rand-int 7)
 
-
 ;P24 (*) Lotto: Draw N different random numbers from the set 1..M.
 ;Example:
 ;scala> lotto(6, 49)
 ;res0: List[Int] = List(23, 1, 17, 33, 21, 37)
 
+(defn lotto [n limit]
+  (loop [i n
+         r []]
+    (if (= 0 i)
+      r
+      (recur (dec i) (conj r (rand-int limit))))))
 
+;TODO: any fuzzy test tool for clojure?
+(lotto 6 49)
+
+
+;; P25 (*) Generate a random permutation of the elements of a list.
+;; Hint: Use the solution of problem P23.
+;; Example:
+
+;; scala> randomPermute(List('a, 'b, 'c, 'd, 'e, 'f))
+;; res0: List[Symbol] = List('b, 'a, 'd, 'c, 'e, 'f)
+
+;use randomSelect function in P23
+(defn randomPermute [lst]
+  (randomSelect (count lst) lst))
+
+;Smart move !! See the power of functional pattern ?
+;element won't be taken twice.
+(randomPermute (char-array "abcdef"))
+
+
+;; P26 (**) Generate the combinations of K distinct objects chosen from the N elements of a list.
+;; In how many ways can a committee of 3 be chosen from a group of 12 people?
+;; We all know that there are C(12,3) = 220 possibilities (C(N,K) denotes the well-known binomial coefficient).
+;; For pure mathematicians, this result may be great. But we want to really generate all the possibilities.
+;; Example:
+
+;; scala> combinations(3, List('a, 'b, 'c, 'd, 'e, 'f))
+;; res0: List[List[Symbol]] = List(List('a, 'b, 'c), List('a, 'b, 'd), List('a, 'b, 'e), ...
+
+;Integer to binary, length not fixed
+(defn int2bin [i]
+  (str (Integer/toBinaryString i)))
+;2 returns 11
+
+(int2bin 3)
+
+(require '[clojure.pprint :refer (cl-format)])
+
+;len = 6, number = 2
+(cl-format nil "2r~6,'0',B" 2)
+
+;Int to binary with given length
+(defn int2binF [len n]
+  (clojure.pprint/cl-format nil (str "~" len ",'0',B") n))
+
+(int2binF 9 2)
+
+(defn combinations [n lst]
+  (loop [i (dec (count lst))]
+    (if (= i 0)
+       -1
+      (do
+        (println (int2binF n i))
+        (recur (dec i))))))
+
+(combinations 3 (char-array "abcdef"))
