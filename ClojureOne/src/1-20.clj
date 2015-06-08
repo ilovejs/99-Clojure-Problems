@@ -240,7 +240,7 @@
 ;Why this print 10
 (loop [x 10]
     (if (> x 0)
-      (println x)
+       x ;(println x)
       (recur (- x 1))))
 
 ;official doc gives me:
