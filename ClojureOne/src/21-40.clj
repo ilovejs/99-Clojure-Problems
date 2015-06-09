@@ -191,3 +191,86 @@
         (recur (dec i))))))
 
 (combinations 3 (char-array "abcdef"))
+
+
+
+(defn combinations
+    "Generate the combinations of a given size from a list"
+    [k coll]
+    (if (zero? k)
+        '(())
+    (if (empty? coll)
+        nil
+        (let
+            [[head & tail] coll
+             with-head     (combinations (dec k) tail)
+             without-head  (combinations k tail)]
+
+          (concat (map #(conj % head) with-head)
+                  without-head)))))
+
+(combinations 3 (char-array "abcdef"))
+
+;something wrong
+(defn comb [k l]
+  (if (= 1 k) (map vector l)
+      (apply concat
+             (map-indexed
+              #(map (fn [x] (conj x %2)) (comb (dec k) (drop (inc %1) l)) )))))
+
+(comb 3 '(1 2))
+
+;rewrite python code to clojure
+
+;; def comb(sofar, rest, n):
+;;     if n == 0:
+;;         print sofar
+;;     else:
+;;         for i in range(len(rest)):
+;;             comb(sofar + rest[i], rest[i+1:], n-1)
+
+;; comb("", "abcde", 3)
+
+(defn comb [sofar v n]
+  (if (= n 0)
+    (print sofar)
+    (for [i (range 0 (count v))]
+      (comb  (str sofar (nth v i))   ;don't it need to be recur ?
+             (subvec v (inc i))
+             (dec i)))))
+
+(defn comb2 [sofar v n t]
+  (if (= n 0)
+    (print sofar)
+    (for [i (range 0 (count v))]
+      (recur (str sofar (nth v i))   ;don't it need to be recur ?
+             (subvec v (inc i))
+             (dec i)
+             (inc t)))))
+
+(comb "" [\a \b \c] 3 )
+
+;; Corrent answer
+
+;c(n,k) = c(n-1, k-1) + c(n-1,k)
+;c(6,2) = c(5,1) + c(5,2) = 5 + 10 = 15
+
+;total combination equals to if to choose first element, the rest have c(n-1,k-1) combinations.
+;or if first element is not choosen, choose k from the rest n-1 element.
+(defn combinations
+  "P26 (**) Generate the combinations of K distinct objects chosen
+  from the N elements of a list."
+  [k n]
+  (cond (= k 0) '(nil)
+        (empty? n) nil
+        :else (concat (map #(conj % (first n)) (combinations (dec k) (rest n)))
+                      (combinations k (rest n)))))
+
+(combinations 3 '(\a \b \c \d \e \f))
+
+;P27
+
+;P28
+
+
+
