@@ -15,3 +15,13 @@
    (>= grade 60) "D"
    :else "F"))
 
+;Anther version
+(defn my-reverse [s]
+  (let [lst (list)]
+    (reduce #(str %2 %1)
+      (mapcat #(conj lst %1) s))))
+
+(defn my-palindrome? [s]
+  (= s (my-reverse s)))
+
+(true? (my-palindrome? "21022012"))
